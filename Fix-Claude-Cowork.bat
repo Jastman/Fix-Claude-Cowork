@@ -9,7 +9,7 @@ if !errorLevel! neq 0 (
 )
 
 echo ==========================================
-echo    Claude Cowork Interactive Reset Tool
+echo    Claude Cowork Interactive Reset Tool :D
 echo ==========================================
 echo.
 echo Scanning for known background tools that block WSL networks...
