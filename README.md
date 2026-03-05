@@ -1,25 +1,32 @@
-# Claude Cowork Fix for Windows
+# Claude Cowork Fix for Windows (Interactive Edition)
 
-A dead-simple, one-click script to resolve the recurring `virtiofs` and Plan9 mount RPC errors in the Claude desktop app for Windows. 
+A surgical, interactive CLI tool to resolve the "VM service not running" and "Plan9 mount" errors in the Claude Desktop app for Windows.
 
 ## The Problem
-When using Claude's Cowork feature on Windows, the underlying Linux virtual machine can crash or get stuck, throwing an error like:
-`RPC error -1: failed to ensure virtiofs mount: Plan9 mount failed: bad address`
+Claude Cowork runs inside a lightweight Linux container (WSL2). On Windows, this container is highly sensitive to:
+1. **Network Conflicts:** Tools like Tailscale, ZeroTier, or VPNs can block the virtual network creation.
+2. **Resource Locking:** Apps like Ollama or Docker can "lock" the WSL environment, preventing Claude from booting.
+3. **Ghost Services:** The `CoworkVMService` often gets stuck in a "Starting" or "Stopping" loop.
 
-Simply restarting the Claude app doesn't fix it because the background processes and the Windows Subsystem for Linux (WSL) remain in a frozen state.
+## How This Script Fixes It
+Unlike a "nuclear option" that kills everything, this script is **interactive and surgical**:
 
-## The Solution
-`Fix-Claude-Cowork.bat` automates the manual workaround. With one double-click, it:
-1. Force-kills all lingering Claude background processes.
-2. Issues a `wsl --shutdown` command to completely reset the virtual file system.
+1. **Auto-Elevation:** Automatically requests Admin privileges to manage Windows Services.
+2. **Conflict Detection:** Scans your active processes for a "hit list" of known offenders (Tailscale, Ollama, Docker, etc.).
+3. **User Consent:** For every app found, it asks: *Do you want to stop this app?*
+4. **Surgical Strike:** It resets the Claude services and WSL environment only after you give the green light.
+5. **Feedback Loop:** After each attempt, it asks: *Did that fix it?* If yes, the script exits immediately without touching any other apps.
 
 ## Usage
-1. Download `Fix-Claude-Cowork.bat` to your desktop or workspace.
-2. Whenever Claude throws the Cowork error, make sure Claude is closed, then double-click the script.
-3. Relaunch Claude.
+1. Download `Fix-Claude-Cowork.bat` to your machine.
+2. **Double-click** the file (or run it from PowerShell).
+3. Follow the on-screen prompts to selectively stop conflicting apps.
+4. Once Claude is running, you can safely restart your other tools!
 
-## Note on Working Directories
-To prevent this error from happening in the first place, ensure your project folder is not located inside a cloud-synced directory (like OneDrive or Google Drive) and that the file path contains no spaces or symbolic links. 
+## Known "Conflict" Apps Detected
+* **VPNs/Mesh:** Tailscale, ZeroTier, OpenVPN, WireGuard
+* **Local AI/Containers:** Ollama, LM Studio, Docker Desktop
+* **Remote Access:** Rainway, Parsec
 
-## License
-MIT License - Copyright (c) 2026 Jake Steinerman
+---
+*Created by [Jake Steinerman](https://github.com/Jastman)*
